@@ -27,6 +27,9 @@
 	vector_end:
 
 	reset_handler:
+	LDR R0, =0x10000084
+	LDR R1, [R0]
+
         MRS r0, cpsr
         BIC r1, r0, #0x1F
         ORR r1, r1, #ARM_MODE_BIT_SVC
