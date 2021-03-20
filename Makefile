@@ -16,7 +16,8 @@ ASM_OBJS = $(patsubst boot/%.S, build/%.os, $(ASM_SRCS))
 
 VPATH = boot \
 	hal/$(TARGET) \
-	lib
+	lib \
+        kernel	
 
 C_SRCS = $(notdir $(wildcard boot/*.c))
 C_SRCS += $(notdir $(wildcard hal/$(TARGET)/*.c))
@@ -31,6 +32,7 @@ INC_DIRS = -I include \
 	-I kernel
 
 CFLAGS = -c -g -std=c11
+LDFLAGS = -nostartfiles -nostdlib -nodefaultlibs -static -lgcc
 
 window = build/window.axf
 window_bin = build/window.bin
@@ -55,7 +57,8 @@ kill:
 	kill -9 `ps aux | grep 'qemu' | awk 'NR==1{print $$2}'`
 
 $(window) : $(ASM_OBJS) $(C_OBJS) $(LINKER_SCRIPT)
-	$(LD) -n -T $(LINKER_SCRIPT) -o $(window) $(ASM_OBJS) $(C_OBJS) -Map=$(MAP_FILE)
+	#$(LD) -n -T $(LINKER_SCRIPT) -o $(window) $(ASM_OBJS) $(C_OBJS) -Map=$(MAP_FILE)
+	$(CC) -n -T $(LINKER_SCRIPT) -o $(window) $(ASM_OBJS) $(C_OBJS) -Wl,-Map=$(MAP_FILE) $(LDFLAGS)
 	$(OC) -O binary $(window) $(window_bin)
 
 build/%.os: %.S
